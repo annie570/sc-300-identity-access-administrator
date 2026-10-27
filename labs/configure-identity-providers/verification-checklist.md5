@@ -1,0 +1,102 @@
+# Verification Checklist — Configure Identity Providers Lab
+
+---
+
+## Part 1 — SAML/WS-Fed IdP Federation ✅
+
+- [ ] Navigated to **Identity → External Identities → All identity providers**
+- [ ] Selected **+ New SAML/WS-Fed IdP**
+- [ ] Entered the partner's domain namespace
+- [ ] Selected the correct protocol (SAML 2.0 or WS-Fed)
+- [ ] Provided required attributes (via metadata URL or manual entry)
+- [ ] Saved the federation configuration
+- [ ] Understood that existing guests are NOT affected by new federation setup
+- [ ] Understood that deleting federation breaks existing guest sign-in
+
+---
+
+## Part 2 — Google Federation ✅
+
+- [ ] Created a new project in **Google Developers Console**
+- [ ] Configured the **OAuth consent screen** (External, added microsoftonline.com)
+- [ ] Created **OAuth client credentials** (Web application type)
+- [ ] Added both authorized redirect URIs:
+  - `https://login.microsoftonline.com`
+  - `https://login.microsoftonline.com/te/<tenant-ID>/oauth2/authresp`
+- [ ] Copied the **Client ID** and **Client Secret**
+- [ ] Configured Google federation in **Azure portal → Entra ID → External Identities**
+- [ ] Entered Client ID and Client Secret → Saved
+- [ ] Tested by inviting a Gmail address and accepting the invitation
+
+---
+
+## Part 3 — Facebook Federation ✅
+
+- [ ] Created a new app in **Facebook Developers Console**
+- [ ] Configured basic settings (category, site URL, privacy policy URL)
+- [ ] Copied the **App ID** and **App Secret**
+- [ ] Configured **Facebook Login** with the correct OAuth redirect URI
+- [ ] Made the app **Live** (switched from Development to Live mode)
+- [ ] Configured Facebook federation in **Azure portal → Entra ID → External Identities**
+- [ ] Entered App ID and App Secret → Saved
+
+---
+
+## Exam-Style Questions — Test Your Understanding
+
+**Q1: A partner organisation uses AD FS as their identity provider. Which federation type should you configure in Microsoft Entra ID?**
+> **SAML/WS-Fed IdP federation** (also called direct federation). AD FS supports
+> WS-Federation and SAML 2.0. You would configure the federation using the partner's
+> AD FS metadata URL or by manually entering the required WS-Fed attributes.
+
+**Q2: You configure Google federation after 50 guest users from Gmail have already redeemed their invitations. Will those guests now authenticate via Google federation?**
+> No. Setting up federation does NOT change the authentication method for guests
+> who have already redeemed their invitations. Those 50 guests continue using
+> their original authentication method. To migrate them to Google federation,
+> you must reset each user's **redemption status**.
+
+**Q3: A user wants to sign up for your application using their Facebook account. Is this possible with B2B invitations?**
+> No. Facebook federation is only supported for **self-service sign-up user flows**.
+> Users cannot be invited via B2B and redeem their invitation using a Facebook account.
+> To use Facebook, you must enable self-service sign-up and add Facebook as an
+> identity provider in a user flow.
+
+**Q4: You delete Google federation from your tenant. What happens to existing Google guest users?**
+> Existing Google guest users who already redeemed their invitations will no longer
+> be able to sign in. To restore their access, you must delete their guest account
+> from the directory and reinvite them.
+
+**Q5: What two authorized redirect URIs must be added when creating Google OAuth credentials for Entra B2B?**
+> 1. `https://login.microsoftonline.com`
+> 2. `https://login.microsoftonline.com/te/<your-tenant-ID>/oauth2/authresp`
+
+**Q6: What is the difference between Google federation and configuring federation with a Google Workspace (G Suite) domain?**
+> **Google federation** is for individual **Gmail users** (personal @gmail.com accounts)
+> signing in as B2B guests. For **Google Workspace / G Suite** organisations with
+> their own managed domain (e.g. @company.com powered by Google), you should use
+> **SAML/WS-Fed direct federation** instead, as Google Workspace supports SAML.
+
+**Q7: A Facebook app is in Development mode. Can regular users sign up with it?**
+> No. While in Development mode, only Facebook developer accounts registered in
+> the app can use it. The app must be switched to **Live** mode before regular
+> users can sign up through it.
+
+**Q8: Which two claims are required in the SAML 2.0 token issued by a federated IdP?**
+> 1. **NameID Format** — `urn:oasis:names:tc:SAML:2.0:nameid-format:persistent`
+> 2. **emailaddress** — `https://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress`
+
+---
+
+## SC-300 Exam Relevance
+
+| Skill Area | Covered |
+|---|---|
+| Configure SAML/WS-Fed IdP federation | ✅ Part 1 |
+| Understand federation impact on existing guests | ✅ Part 1 |
+| Configure Google as B2B identity provider | ✅ Part 2 |
+| Create Google OAuth credentials | ✅ Part 2 |
+| Configure Facebook for self-service sign-up | ✅ Part 3 |
+| Create Facebook app credentials | ✅ Part 3 |
+| Understand B2B vs self-service sign-up | ✅ All parts |
+| Remove identity provider configurations | ✅ All parts |
+| Google WebView deprecation awareness | ✅ Part 2 |

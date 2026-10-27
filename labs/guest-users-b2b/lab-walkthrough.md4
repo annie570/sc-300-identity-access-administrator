@@ -1,0 +1,243 @@
+# Lab Walkthrough: Add and Manage Guest Users
+
+---
+
+## Exercise 1 — Invite a Single Guest User
+
+### Step 1 — Sign in to Microsoft Entra Admin Center
+
+1. Go to **entra.microsoft.com**
+2. Sign in with an account assigned either:
+   - A **limited administrator directory role**, OR
+   - The **Guest Inviter role**
+
+> 💡 **SC-300 Tip:** The Guest Inviter role is a least-privilege role that allows
+> a user to invite external guests without granting any other administrative permissions.
+> Always follow the principle of least privilege — assign Guest Inviter rather than
+> User Administrator when the only requirement is inviting guests.
+
+---
+
+### Step 2 — Navigate to Users
+
+1. In the left navigation, select **Identity**
+2. Under **Users**, select **All Users**
+
+---
+
+### Step 3 — Create a Guest Invitation
+
+1. Select **+ New user** from the top menu
+2. Select **Invite external user** from the dropdown
+
+---
+
+### Step 4 — Fill in Guest User Details
+
+On the New user (Invite user) page, enter the following:
+
+| Field | Value | Notes |
+|---|---|---|
+| Email | Guest's individual email address | No group emails; no + symbols |
+| Display name | Guest's full name | How they appear in your directory |
+| Message | Optional personal message | Included in the invitation email |
+
+### Email Address Restrictions
+
+| ❌ Not Supported | ✅ Supported |
+|---|---|
+| Group email addresses (e.g. team@company.com) | Individual email (e.g. john@partner.com) |
+| Plus symbols (e.g. john+work@company.com) | Standard email format only |
+| Aliases with + characters | name@domain.com format |
+
+> ⚠️ **Why no plus symbols?**
+> Microsoft Entra ID does not currently support plus symbols in email addresses.
+> If a user has a plus symbol in their address, omit the plus symbol and any
+> characters between it and the @ symbol to avoid delivery issues.
+> Example: `john+filter@company.com` → use `john@company.com`
+
+---
+
+### Step 5 — Send the Invitation
+
+1. Review the details
+2. Select **Invite**
+3. The invitation email is sent automatically to the guest's email address
+
+---
+
+### Step 6 — Verify Guest Account in Directory
+
+1. Return to **Identity → Users → All Users**
+2. Find your guest account in the list
+3. Check the **User type** column — it should show **Guest**
+
+### What Happens After Invitation
+
+```
+You send invitation
+        ↓
+Guest receives email with link
+        ↓
+Guest clicks "Accept invitation"
+        ↓
+Guest authenticates with their own identity
+(Microsoft account, Google, or their org's Entra ID)
+        ↓
+Guest account becomes Active in your directory
+        ↓
+Guest can access resources you have shared with them
+```
+
+---
+
+## Exercise 2 — Bulk Invite Guest Users
+
+Use this method when you need to invite **many guests at once** — partners,
+vendors, or event attendees — without sending individual invitations one by one.
+
+### Step 1 — Navigate to Bulk Operations
+
+1. Sign in to **entra.microsoft.com** as a **User Administrator**
+2. Navigate to **Identity → Users → All Users**
+3. On the All users screen, select **Bulk operations** from the top menu
+4. Select **Bulk invite**
+
+---
+
+### Step 2 — Download the CSV Template
+
+1. In the **Bulk invite users** pane, select **Download to a sample CSV template**
+2. Open the downloaded CSV file in a spreadsheet editor (Excel, Google Sheets)
+3. Review the template structure — it contains two required columns:
+
+| Column | Required | Description |
+|---|---|---|
+| `Email address to invite` | ✅ Yes | Individual email of the guest to invite |
+| `Redirection url` | ✅ Yes | URL guest is redirected to after accepting invitation |
+
+See [bulk-invite-template.md](./bulk-invite-template.md) for the full CSV structure
+and example data.
+
+---
+
+### Step 3 — Complete the CSV File
+
+1. Add one row per guest user you want to invite
+2. Fill in the email address and redirection URL for each guest
+3. Ensure:
+   - No group email addresses
+   - No plus (+) symbols in email addresses
+   - Redirection URL is a valid https:// URL (e.g. your company portal or Teams)
+4. Save the completed CSV file
+
+---
+
+### Step 4 — Upload the CSV File
+
+1. Return to the **Bulk invite users** pane in Entra admin center
+2. Under **Upload your CSV file**, click **Browse**
+3. Select your completed CSV file
+4. Validation starts automatically when the file is selected
+
+### Validation Results
+
+| Result | Meaning | Action |
+|---|---|---|
+| ✅ "File uploaded successfully" | File is valid — ready to submit | Proceed to submit |
+| ❌ Validation errors listed | Issues found in the CSV | Fix errors and re-upload |
+
+**Common validation errors:**
+- Invalid email format
+- Missing required column
+- Group email address detected
+- Plus symbol in email address
+- Invalid or missing redirection URL
+
+---
+
+### Step 5 — Submit the Bulk Operation
+
+1. After successful validation, select **Submit**
+2. Azure begins processing the bulk invite operation
+3. Invitations are queued and sent to all listed guests
+
+---
+
+### Step 6 — Monitor the Bulk Operation Status
+
+Two ways to check progress:
+
+**Option A — View status directly:**
+Select **"View the status of each operation"** link shown after submission
+
+**Option B — Bulk operation results:**
+Navigate to **Users → Bulk operation results** in the Activity section
+
+### Reading the Results
+
+| Column | Meaning |
+|---|---|
+| # Success | Invitations sent successfully |
+| # Failure | Invitations that failed — click to see reasons |
+| Total Requests | Total rows submitted from your CSV |
+
+When complete, a notification confirms **"The bulk operation succeeded"**
+
+---
+
+## Exercise 3 — Manage Guest Users (B2B Collaboration Demo)
+
+This exercise uses an interactive click-through demo from Microsoft Learn:
+🔗 [Manage Guest User Access in Azure AD for B2B Collaboration](https://mslearn.cloudguides.com/guides/Manage%20Guest%20User%20Access%20in%20Azure%20AD%20for%20B2B%20Collaboration)
+
+### What the Demo Covers
+
+**1. Invite external users to collaborate**
+- Send B2B invitations to external partners
+- View the invitation state in the directory
+- Understand the guest acceptance flow
+
+**2. Assign resources to guest users**
+- Add guest users to groups
+- Assign applications to guest users
+- Share SharePoint sites with external guests
+
+**3. Create Conditional Access policies for guest users**
+- Create a CA policy targeting guest and external users specifically
+- Require MFA for all guest sign-ins
+- Restrict guest access to specific apps or locations
+- Apply stricter session controls for external users
+
+### Key Conditional Access Concepts for Guest Users
+
+| Policy Setting | Recommended for Guests |
+|---|---|
+| Require MFA | ✅ Always — guests use external identities |
+| Session sign-in frequency | Shorter timeout than internal users |
+| Persistent browser session | Disabled for guests |
+| Compliant device | Optional — guests may use unmanaged devices |
+| Terms of use | Require guests to accept before accessing resources |
+
+---
+
+## Summary of All Exercises
+
+| Exercise | Method | Invited | Result |
+|---|---|---|---|
+| Single guest invite | Entra admin center — Invite external user | 1 user | Guest account in directory |
+| Bulk guest invite | CSV upload via Bulk operations | Multiple users | All guests invited at once |
+| Manage guest access | Conditional Access + resource assignment | All guests | Secure, governed access |
+
+---
+
+## B2B vs B2C — Know the Difference (SC-300 Exam)
+
+| | B2B Collaboration | B2C (External Identities) |
+|---|---|---|
+| **Who** | Partners, vendors, contractors | Customers / consumers |
+| **Identity** | Guest uses their own org identity | Customer creates their own account |
+| **User type** | Guest | Customer (separate tenant) |
+| **Use case** | Internal app sharing with partners | Public-facing customer apps |
+| **Product** | Microsoft Entra External ID (B2B) | Microsoft Entra External ID (B2C) |
+| **Admin center** | Entra admin center | Separate B2C tenant |

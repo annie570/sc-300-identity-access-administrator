@@ -1,0 +1,73 @@
+# Lab: Configure Identity Providers
+
+**Exam Domain:** 1 — Implement identities in Microsoft Entra ID
+**Topic:** External identities — SAML/WS-Fed IdP federation, Google federation, Facebook federation
+**Platform:** Microsoft Entra admin center + Azure portal
+**Status:** ✅ Complete
+
+---
+
+## 🎯 Lab Objectives
+
+This lab covers three identity provider configurations:
+
+1. **SAML/WS-Fed IdP Federation** — federate with a partner organisation's identity provider
+2. **Google Federation** — allow Gmail users to sign in as B2B guests
+3. **Facebook Federation** — allow Facebook users to sign in via self-service sign-up
+
+---
+
+## 🏢 Scenario
+
+Your organisation works with external partners, and you want to enable seamless sign-in for guest users without requiring them to create separate Microsoft Entra accounts. You will configure multiple external identity providers so that guests can use their own organisational or social identities to access shared resources.
+
+---
+
+## 📋 Prerequisites
+
+| Requirement | Detail |
+|---|---|
+| Tenant | Microsoft Entra tenant |
+| Role required | Global Administrator |
+| Google setup | Google account + access to Google Developers Console |
+| Facebook setup | Facebook account + access to Facebook Developers Console |
+| Self-service sign-up | Must be enabled for Facebook federation |
+
+---
+
+## 📁 Lab Files
+
+| File | Description |
+|---|---|
+| [lab-walkthrough.md](./lab-walkthrough.md) | Step-by-step guide for all three IdP configurations |
+| [saml-wsfed-reference.md](./saml-wsfed-reference.md) | SAML 2.0 and WS-Fed required attributes and claims reference |
+| [verification-checklist.md](./verification-checklist.md) | Checklist + exam-style questions |
+
+---
+
+## ✅ Key Learning Outcomes
+
+- Understand when SAML/WS-Fed IdP federation applies vs Google/Facebook
+- Configure Google as an identity provider for B2B guest users
+- Create a Google developer project and obtain client credentials
+- Configure Facebook as an identity provider for self-service sign-up
+- Create a Facebook app and obtain App ID and App Secret
+- Understand the end-user sign-in experience for each IdP
+- Know how to remove/delete federation configurations
+- Understand the impact of deleting federation on existing guest users
+
+---
+
+## 🔑 Key Concepts for SC-300 Exam
+
+| Concept | What to Know |
+|---|---|
+| SAML/WS-Fed federation | For organisations with their own IdP (e.g. AD FS, Okta, Ping) |
+| Google federation | For Gmail users signing in as B2B guests |
+| Facebook federation | Only for self-service sign-up — cannot be used for B2B invitations |
+| Federation scope | Tied to domain namespaces (e.g. contoso.com) |
+| Existing guest users | Federation change does NOT affect already-redeemed invitations |
+| Redemption status reset | Required to change auth method for existing guest users |
+| WebView deprecation | Google deprecated embedded WebView sign-in from September 2021 |
+| Removing federation | Existing guests using that IdP will lose sign-in ability |
+| B2B vs self-service | Google = B2B invitations; Facebook = self-service sign-up user flows only |

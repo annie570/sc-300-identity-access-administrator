@@ -1,0 +1,301 @@
+# Lab Walkthrough: Configure Identity Providers
+
+---
+
+## Part 1 — SAML/WS-Fed IdP Federation
+
+### What is SAML/WS-Fed IdP Federation?
+
+SAML/WS-Fed IdP federation (formerly called "direct federation") allows you to
+federate with any partner organisation whose IdP supports SAML 2.0 or WS-Federation.
+Guest users from that partner domain sign in using their own organisational account
+— no separate Microsoft Entra account needed.
+
+---
+
+### When Does SAML/WS-Fed Federation Apply?
+
+| Scenario | Authentication Method Used |
+|---|---|
+| Federation set up BEFORE guest redeems invitation | Guest uses the federated SAML/WS-Fed IdP |
+| Guest already redeemed invitation, THEN federation set up | Guest continues using their original auth method |
+| Partner org moves to Entra ID after federation set up | Guest continues using federated SAML/WS-Fed IdP |
+| Federation deleted | Guests using that IdP can NO longer sign in |
+
+> ⚠️ **Key exam point:** Setting up or deleting federation does NOT automatically
+> change the authentication method for guests who already redeemed their invitation.
+> To update an existing guest's auth method, you must **reset their redemption status**.
+
+---
+
+### End-User Sign-In Experience
+
+```
+Guest accesses shared resource
+        ↓
+Prompted to sign in
+        ↓
+Redirected to their own organisation's IdP (e.g. AD FS, Okta)
+        ↓
+Authenticates successfully at their IdP
+        ↓
+Redirected back to Microsoft Entra ID
+        ↓
+✅ Access granted to shared resource
+```
+
+If the federated IdP has SSO enabled and the session is still valid,
+the user is not prompted to sign in again.
+
+---
+
+### Configure SAML/WS-Fed Federation — Steps
+
+1. Go to **entra.microsoft.com**
+2. Navigate to **Identity → External Identities → All identity providers**
+3. Select **+ New SAML/WS-Fed IdP**
+4. Enter the partner's domain name (e.g. `contoso.com`)
+5. Choose the protocol: **SAML 2.0** or **WS-Federation**
+6. Provide the required attributes — either by:
+   - Uploading the partner IdP's metadata XML URL, OR
+   - Entering the values manually
+7. Select **Save**
+
+> See [saml-wsfed-reference.md](./saml-wsfed-reference.md) for the full list of
+> required attributes and claims for both SAML 2.0 and WS-Fed.
+
+---
+
+## Part 2 — Google Federation
+
+### What is Google Federation?
+
+Google federation allows invited Gmail users to sign in to your shared apps
+and resources using their own Gmail accounts — without creating a Microsoft account.
+
+> 💡 **Important distinction:**
+> - Google federation = for **Gmail users** invited via B2B
+> - G Suite/Google Workspace domains = use **SAML/WS-Fed direct federation** instead
+
+---
+
+### Step 1 — Create a Google Developer Project
+
+1. Go to **console.developers.google.com**
+2. Sign in with your Google account (use a shared team account — recommended)
+3. Accept the terms of service if prompted
+4. Select **Create Project**
+5. Enter a project name (e.g. `Microsoft Entra B2B`)
+6. Select **Create**
+
+---
+
+### Step 2 — Configure the OAuth Consent Screen
+
+1. On the APIs and Services page, select your new project
+2. Select **Go to APIs overview → OAuth consent screen**
+3. Select **External** then select **Create**
+4. On the OAuth consent screen:
+   - Enter an **Application name** (e.g. `Microsoft Entra B2B`)
+   - Scroll to **Authorized domains**
+   - Enter: `microsoftonline.com`
+5. Select **Save**
+
+---
+
+### Step 3 — Create OAuth Client Credentials
+
+1. Select **Credentials**
+2. On the **Create credentials** menu, select **OAuth client ID**
+3. Under **Application type**, select **Web application**
+4. Give the application a name (e.g. `Microsoft Entra B2B`)
+5. Under **Authorized redirect URIs**, add both:
+   ```
+   https://login.microsoftonline.com
+   https://login.microsoftonline.com/te/<your-tenant-ID>/oauth2/authresp
+   ```
+   *(Replace `<your-tenant-ID>` with your actual Azure tenant ID)*
+6. Select **Create**
+7. **Copy and save** the **Client ID** and **Client Secret**
+   > ⚠️ Save these immediately — you will need them in the next step
+
+---
+
+### Step 4 — Configure Google Federation in Microsoft Entra ID
+
+1. Go to the **Azure portal** (portal.azure.com)
+2. In the left pane, select **Microsoft Entra ID**
+3. Select **External Identities**
+4. Select **All identity providers**
+5. Select the **Google** button
+6. Enter the **Client ID** and **Client Secret** from Step 3
+7. Select **Save**
+
+---
+
+### Step 5 — Test Google Federation
+
+1. Invite yourself using a Gmail address
+2. Accept the invitation using your Google account
+3. Verify you can sign in and access the shared resource
+
+---
+
+### Google Guest User Sign-In Experience
+
+| User State | Experience |
+|---|---|
+| Not signed in to Google | Prompted to sign in to Google |
+| Already signed in to Google | Prompted to choose which Google account to use |
+| "Header too long" error | Clear cookies or use private/incognito window |
+
+### Google Sign-In Endpoints
+
+Guests can sign in via:
+
+| Endpoint | URL |
+|---|---|
+| App portal with tenant context | `https://myapps.microsoft.com/?tenantid=<tenant-ID>` |
+| App portal with domain | `https://myapps.microsoft.com/<domain>.onmicrosoft.com` |
+| Azure portal | `https://portal.azure.com/<tenant-ID>` |
+| Direct app link | `https://myapps.microsoft.com/signin/X/<app-ID>?tenantId=<tenant-ID>` |
+| Common endpoint | `https://myapps.microsoft.com` → Sign-in options → Sign in to an organisation |
+
+---
+
+### Remove Google Federation
+
+1. Go to **Azure portal → Microsoft Entra ID**
+2. Select **External Identities → All identity providers**
+3. On the **Google** line, select the **ellipsis (...)** → **Delete**
+4. Select **Yes** to confirm
+
+> ⚠️ **Impact of deletion:** Google guest users who already redeemed invitations
+> will no longer be able to sign in. To restore access, delete the guest account
+> from the directory and reinvite them.
+
+---
+
+### Google WebView Deprecation — Important for SC-300
+
+From **September 30, 2021**, Google deprecated embedded WebView sign-in support.
+
+**Affected apps (Gmail users cannot authenticate):**
+- Microsoft apps (Teams, Power Apps) on Windows using WebView
+- Android apps using the WebView UI element
+- iOS apps using UIWebView/WKWebview
+- Apps using older Microsoft Authentication Library versions
+
+**NOT affected:**
+- Web apps
+- Microsoft 365 services accessed via browser (SharePoint, Teams web app)
+- Mobile apps using system web-views (SFSafariViewController on iOS, Custom Tabs on Android)
+- Google Workspace identities using SAML-based federation
+- Windows apps using Web Account Manager (WAM) or Web Authentication Broker (WAB)
+
+---
+
+## Part 3 — Facebook Federation
+
+### What is Facebook Federation?
+
+Facebook federation allows users to sign up for your applications
+using their own Facebook accounts via **self-service sign-up user flows**.
+
+> ⚠️ **Critical exam point — Facebook is NOT for B2B invitations:**
+> - Facebook = **self-service sign-up only**
+> - Users CANNOT be invited via B2B and redeem using a Facebook account
+> - Facebook federation requires **self-service sign-up to be enabled** in your tenant
+
+---
+
+### Step 1 — Create a Facebook App in the Developer Console
+
+1. Go to **facebook.com** — sign in or create an account
+2. Go to **Facebook for Developers** — select **Get Started** if not registered
+3. Select **My Apps → Create App**
+4. Enter a **Display Name** and valid **Contact Email**
+5. Select **Create App ID**
+6. Accept Facebook platform policies and complete the security check
+
+---
+
+### Step 2 — Configure Basic Settings
+
+1. Select **Settings → Basic**
+2. Choose a **Category** (e.g. Business and Pages)
+3. At the bottom, select **Add Platform → Website**
+4. In **Site URL**, enter your application URL (e.g. `https://contoso.com`)
+5. In **Privacy Policy URL**, enter your privacy policy URL
+6. Select **Save Changes**
+7. At the top of the page, **copy the App ID**
+8. Select **Show** next to App Secret and **copy the App Secret**
+
+> ⚠️ **App Secret is a critical security credential — store it securely**
+
+---
+
+### Step 3 — Configure Facebook Login
+
+1. Select the **+** next to PRODUCTS
+2. Select **Set up** under **Facebook Login**
+3. Under Facebook Login, select **Settings**
+4. In **Valid OAuth redirect URIs**, enter:
+   ```
+   https://login.microsoftonline.com/te/<tenant-ID>/oauth2/authresp
+   ```
+   *(Replace `<tenant-ID>` with your actual Azure tenant ID — found in Entra ID Overview)*
+5. Select **Save Changes**
+
+---
+
+### Step 4 — Make the App Public
+
+1. Select the **Status selector** at the top right of the page
+2. Turn it **On** to make the application public
+3. Select **Switch Mode**
+4. Status changes from **Development → Live**
+
+> If the app remains in Development mode, only Facebook developer accounts
+> can use it — it will not work for regular users
+
+---
+
+### Step 5 — Configure Facebook Federation in Microsoft Entra ID
+
+1. Sign in to the **Azure portal** as Global Administrator
+2. Under Azure services, select **Microsoft Entra ID**
+3. In the left menu, select **External Identities**
+4. Select **All identity providers**
+5. Select **Facebook**
+6. For **Client ID**, enter the **App ID** from Step 2
+7. For **Client secret**, enter the **App Secret** from Step 2
+8. Select **Save**
+
+---
+
+### Remove Facebook Federation
+
+1. Go to **Azure portal → Microsoft Entra ID**
+2. Select **External Identities → All identity providers**
+3. On the **Facebook** line, select the **ellipsis (...)** → **Delete**
+4. Select **Yes** to confirm
+
+> ⚠️ **Impact of deletion:** Any users who signed up via Facebook through user flows
+> will no longer be able to sign in to your applications.
+
+---
+
+## Identity Provider Comparison Summary
+
+| Feature | SAML/WS-Fed | Google | Facebook |
+|---|---|---|---|
+| Protocol | SAML 2.0 or WS-Fed | OAuth 2.0 / OpenID Connect | OAuth 2.0 |
+| Use case | Partner org federation | Gmail B2B guest sign-in | Self-service sign-up only |
+| B2B invitations | ✅ Yes | ✅ Yes | ❌ No |
+| Self-service sign-up | ✅ Yes | ✅ Yes | ✅ Yes |
+| Tied to domain | ✅ Yes (domain namespace) | ✅ Gmail domains | ❌ No |
+| Setup location | Entra admin center | Azure portal + Google Console | Azure portal + Facebook Console |
+| Credentials needed | Metadata XML or manual attributes | Client ID + Client Secret | App ID + App Secret |
+| Impact of deletion | Existing guests cannot sign in | Existing guests cannot sign in | Signed-up users cannot sign in |
+| Fix after deletion | Reinvite guests | Delete and reinvite guests | N/A — user flow sign-up only |

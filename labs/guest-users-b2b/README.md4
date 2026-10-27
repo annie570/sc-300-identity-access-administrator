@@ -1,0 +1,71 @@
+# Lab: Add and Manage Guest Users (B2B Collaboration)
+
+**Exam Domain:** 1 — Implement identities in Microsoft Entra ID
+**Topic:** External identities — B2B collaboration and guest user management
+**Platform:** Microsoft Entra admin center
+**Status:** ✅ Complete
+
+---
+
+## 🎯 Lab Objectives
+
+This lab covers three exercises:
+
+1. **Invite a single guest user** to the Microsoft Entra directory
+2. **Bulk invite guest users** using a CSV file upload
+3. **Manage guest user access** including Conditional Access for B2B collaboration
+
+---
+
+## 🏢 Scenario
+
+Your organisation needs to collaborate with external partners, vendors, and contractors. Instead of creating full member accounts for these external users, Microsoft Entra ID allows you to invite them as **guest users** through **B2B (Business-to-Business) collaboration**. Guest users can access the resources you share with them while keeping their own organisation's identity.
+
+---
+
+## 📋 Prerequisites
+
+| Requirement | Detail |
+|---|---|
+| Tenant | Microsoft Entra tenant |
+| Role required | User Administrator OR Guest Inviter role |
+| For bulk invite | User Administrator role |
+| Email addresses | Valid individual email addresses (no group emails, no + symbols) |
+
+---
+
+## 📁 Lab Files
+
+| File | Description |
+|---|---|
+| [lab-walkthrough.md](./lab-walkthrough.md) | Step-by-step guide for all three exercises |
+| [bulk-invite-template.md](./bulk-invite-template.md) | CSV template structure and bulk invite guide |
+| [verification-checklist.md](./verification-checklist.md) | Checklist + exam-style questions |
+
+---
+
+## ✅ Key Learning Outcomes
+
+- Invite an individual external user as a guest in Entra ID
+- Understand the B2B invitation flow and email delivery
+- Download, complete, and upload the bulk invite CSV template
+- Verify guest user accounts in the All Users list
+- Identify guest vs member user types in the directory
+- Understand Conditional Access policies for guest users
+- Manage guest user resource assignments
+
+---
+
+## 🔑 Key Concepts for SC-300 Exam
+
+| Concept | What to Know |
+|---|---|
+| B2B collaboration | External users invited as guests — use their own identity to access your resources |
+| Guest user type | User type = Guest (vs Member for internal users) |
+| Invitation flow | Invite sent by email → guest accepts → account active in directory |
+| Guest Inviter role | Limited role that can only invite guests — cannot manage other users |
+| Email restrictions | No group emails; no plus (+) symbols in email addresses |
+| Bulk invite | CSV file with email address and redirection URL — uploaded via Bulk operations |
+| Conditional Access | Can target guest users specifically with stricter policies |
+| B2B vs B2C | B2B = partner/vendor collaboration; B2C = customer-facing identity |
+| External collaboration settings | Controls who can invite guests and what guests can access |

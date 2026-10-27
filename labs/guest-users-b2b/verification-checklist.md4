@@ -1,0 +1,96 @@
+# Verification Checklist — Guest Users B2B Lab
+
+---
+
+## Exercise 1 — Single Guest Invite ✅
+
+- [ ] Signed in with Guest Inviter role or User Administrator
+- [ ] Navigated to **Identity → Users → All Users**
+- [ ] Selected **+ New user → Invite external user**
+- [ ] Entered a valid individual email address (no group email, no + symbol)
+- [ ] Added display name for the guest
+- [ ] Clicked **Invite**
+- [ ] Verified guest account appears in **All Users** list
+- [ ] Confirmed **User type** column shows **Guest**
+
+---
+
+## Exercise 2 — Bulk Guest Invite ✅
+
+- [ ] Signed in as **User Administrator**
+- [ ] Navigated to **Identity → Users → All Users**
+- [ ] Selected **Bulk operations → Bulk invite**
+- [ ] Downloaded the CSV template
+- [ ] Opened and reviewed the CSV structure
+- [ ] Added guest rows (email address + redirection URL)
+- [ ] Verified no group emails or + symbols in any address
+- [ ] Saved the file in CSV format
+- [ ] Uploaded the CSV file to the Bulk invite pane
+- [ ] Waited for validation — confirmed **"File uploaded successfully"**
+- [ ] Clicked **Submit**
+- [ ] Monitored status in **Bulk operation results**
+- [ ] Confirmed operation completed with success notification
+
+---
+
+## Exercise 3 — Manage Guest Users Demo ✅
+
+- [ ] Launched the interactive demo
+- [ ] Completed the invite external user section
+- [ ] Completed the assign resources to guest users section
+- [ ] Completed the Conditional Access policy for guests section
+- [ ] Noted key settings for securing guest access
+
+---
+
+## Exam-Style Questions — Test Your Understanding
+
+**Q1: What role is required to invite guest users without full User Administrator privileges?**
+> The **Guest Inviter** role allows a user to send B2B invitations to external users
+> without granting any other administrative capabilities. This follows the principle
+> of least privilege.
+
+**Q2: A user's email address is `jane+work@partner.com`. What should you enter in the invite form?**
+> Enter `jane@partner.com` — omit the plus symbol and everything between
+> the + and the @ symbol. Microsoft Entra ID does not support plus symbols
+> in email addresses and it will cause delivery failures.
+
+**Q3: What does the User type column show for an external guest in the All Users list?**
+> The User type column shows **Guest** for external B2B users, compared to
+> **Member** for internal users created in your tenant.
+
+**Q4: What are the two required columns in the bulk invite CSV template?**
+> 1. `Email address to invite` — the guest's email address
+> 2. `Redirection url` — where the guest is sent after accepting the invitation
+
+**Q5: What is the difference between B2B collaboration and B2C?**
+> **B2B** is for partner/vendor/contractor collaboration — external users
+> use their own organisational identity to access your resources as guests.
+> **B2C** is for customer-facing scenarios — consumers create their own accounts
+> to access your public-facing applications. They are separate products and
+> use separate tenants.
+
+**Q6: A guest user accepted the invitation but cannot access a shared app. What is the most likely cause?**
+> The guest has not been assigned access to the specific application.
+> Accepting an invitation only creates the guest account in the directory —
+> it does not automatically grant access to any resources. The admin must
+> assign the guest to the required app, group, or resource separately.
+
+**Q7: Can you invite a guest using a shared mailbox or distribution group email?**
+> No. Group email addresses are not supported for B2B invitations.
+> You must use an individual user's email address only.
+
+---
+
+## SC-300 Exam Relevance
+
+| Skill Area | Covered in This Lab |
+|---|---|
+| Invite external users (B2B) | ✅ Exercise 1 — single invite |
+| Bulk invite external users | ✅ Exercise 2 — CSV bulk upload |
+| Manage guest user access | ✅ Exercise 3 — demo |
+| Guest Inviter role | ✅ Covered in Exercise 1 |
+| Conditional Access for guests | ✅ Covered in Exercise 3 demo |
+| B2B vs B2C distinction | ✅ Covered in walkthrough |
+| Guest user type identification | ✅ Verification step in all exercises |
+| Email address restrictions | ✅ Covered in all exercises |
